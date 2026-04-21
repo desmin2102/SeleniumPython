@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+reports/*.html
+screenshots/*.png
+allure-results/
+allure-report/
+.env
+venv/
+.venv/
+*.log

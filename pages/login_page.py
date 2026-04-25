@@ -1,6 +1,7 @@
 """Page object cho trang Login của SauceDemo (URL: /)."""
 
 from selenium.webdriver.common.by import By
+
 from pages.base_page import BasePage
 
 
@@ -17,7 +18,7 @@ class LoginPage(BasePage):
     # Dùng [data-test='error'] thay vì class để tránh bị ảnh hưởng khi site đổi style
     ERROR_MESSAGE = (By.CSS_SELECTOR, "[data-test='error']")
     ERROR_CLOSE_X = (By.CSS_SELECTOR, ".error-button")  # Nút X để đóng error
-    LOGIN_LOGO = (By.CSS_SELECTOR, ".login_logo")       # Logo Swag Labs ở giữa trang
+    LOGIN_LOGO = (By.CSS_SELECTOR, ".login_logo")  # Logo Swag Labs ở giữa trang
 
     def login(self, username, password):
         """Login với username và password.

@@ -1,6 +1,7 @@
 """Page object cho Checkout Step 1 - Your Information (URL: /checkout-step-one.html)."""
 
 from selenium.webdriver.common.by import By
+
 from pages.base_page import BasePage
 
 
@@ -11,7 +12,7 @@ class CheckoutStep1Page(BasePage):
     Nếu thiếu field nào, site sẽ báo "Error: [Field name] is required".
     """
 
-    TITLE = (By.CSS_SELECTOR, ".title")                  # "Checkout: Your Information"
+    TITLE = (By.CSS_SELECTOR, ".title")  # "Checkout: Your Information"
     FIRST_NAME_INPUT = (By.ID, "first-name")
     LAST_NAME_INPUT = (By.ID, "last-name")
     POSTAL_CODE_INPUT = (By.ID, "postal-code")

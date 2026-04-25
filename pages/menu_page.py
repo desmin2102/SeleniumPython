@@ -2,6 +2,7 @@
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+
 from pages.base_page import BasePage
 
 
@@ -11,13 +12,13 @@ class MenuPage(BasePage):
     Có 4 link: All Items, About, Logout, Reset App State.
     """
 
-    BURGER_BUTTON = (By.ID, "react-burger-menu-btn")             # Icon 3 gạch
-    MENU_WRAPPER = (By.CSS_SELECTOR, ".bm-menu-wrap")            # Container sidebar menu
+    BURGER_BUTTON = (By.ID, "react-burger-menu-btn")  # Icon 3 gạch
+    MENU_WRAPPER = (By.CSS_SELECTOR, ".bm-menu-wrap")  # Container sidebar menu
     ALL_ITEMS_LINK = (By.ID, "inventory_sidebar_link")
-    ABOUT_LINK = (By.ID, "about_sidebar_link")                   # Link ra trang saucelabs.com
+    ABOUT_LINK = (By.ID, "about_sidebar_link")  # Link ra trang saucelabs.com
     LOGOUT_LINK = (By.ID, "logout_sidebar_link")
-    RESET_APP_STATE_LINK = (By.ID, "reset_sidebar_link")         # Reset cart, sort về default
-    CLOSE_BUTTON = (By.ID, "react-burger-cross-btn")             # Nút X đóng menu
+    RESET_APP_STATE_LINK = (By.ID, "reset_sidebar_link")  # Reset cart, sort về default
+    CLOSE_BUTTON = (By.ID, "react-burger-cross-btn")  # Nút X đóng menu
 
     def open(self):
         """Mở menu bằng cách click burger icon.
@@ -27,9 +28,18 @@ class MenuPage(BasePage):
 
     def close(self):
         """Đóng menu bằng cách click nút X.
-        Dùng JS click vì animation của menu có thể cover nút X -> click thường fail."""
+        Dùng JS click vì animation của menu có thể cover nút X -> click thường fail.
+        Chờ aria-hidden='true' để chắc chắn animation đóng đã xong."""
         element = self.wait.until(EC.element_to_be_clickable(self.CLOSE_BUTTON))
         self.driver.execute_script("arguments[0].click();", element)
+        self.wait_until_closed()
+
+    def wait_until_closed(self):
+        """Chờ menu đóng hoàn toàn (aria-hidden='true').
+        Thay cho time.sleep() - explicit wait luôn ổn định hơn."""
+        self.wait.until(
+            lambda d: d.find_element(*self.MENU_WRAPPER).get_attribute("aria-hidden") == "true"
+        )
 
     def is_open(self):
         """Kiểm tra menu đang mở không.

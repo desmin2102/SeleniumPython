@@ -1,18 +1,19 @@
 """Test cases cho footer (TC_FOOTER_001 -> 004)."""
 
 import pytest
-from pages.login_page import LoginPage
+
 from pages.footer_page import FooterPage
+from pages.login_page import LoginPage
 
 
 @pytest.fixture(autouse=True)
-def _login(driver):
-    LoginPage(driver).login("standard_user", "secret_sauce")
+def _login(driver, test_data):
+    creds = test_data["users"]["standard_user"]
+    LoginPage(driver).login(creds["username"], creds["password"])
 
 
 @pytest.mark.footer
 class TestFooter:
-
     def test_TC_FOOTER_001_twitter_link_present(self, driver):
         # Link Twitter hiện và trỏ tới saucelabs
         href = FooterPage(driver).get_twitter_href()

@@ -1,6 +1,7 @@
 """Page object cho trang giỏ hàng (URL: /cart.html)."""
 
 from selenium.webdriver.common.by import By
+
 from pages.base_page import BasePage
 
 
@@ -10,8 +11,8 @@ class CartPage(BasePage):
     Có 2 nút điều hướng: Continue Shopping (về lại inventory) và Checkout (qua step 1).
     """
 
-    TITLE = (By.CSS_SELECTOR, ".title")                      # "Your Cart"
-    CART_ITEMS = (By.CSS_SELECTOR, ".cart_item")             # Mỗi dòng item trong cart
+    TITLE = (By.CSS_SELECTOR, ".title")  # "Your Cart"
+    CART_ITEMS = (By.CSS_SELECTOR, ".cart_item")  # Mỗi dòng item trong cart
     CART_ITEM_NAMES = (By.CSS_SELECTOR, ".inventory_item_name")
     CART_ITEM_PRICES = (By.CSS_SELECTOR, ".inventory_item_price")
     REMOVE_BUTTONS = (By.CSS_SELECTOR, "button[id^='remove']")  # Nút Remove từng item

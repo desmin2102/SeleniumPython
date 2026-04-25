@@ -1,6 +1,7 @@
 """Page object cho trang xác nhận đặt hàng thành công (URL: /checkout-complete.html)."""
 
 from selenium.webdriver.common.by import By
+
 from pages.base_page import BasePage
 
 
@@ -10,7 +11,7 @@ class CheckoutCompletePage(BasePage):
     Hiện header "Thank you for your order!" + ảnh Pony Express + nút Back Home.
     """
 
-    TITLE = (By.CSS_SELECTOR, ".title")                  # "Checkout: Complete!"
+    TITLE = (By.CSS_SELECTOR, ".title")  # "Checkout: Complete!"
     COMPLETE_HEADER = (By.CSS_SELECTOR, ".complete-header")  # "Thank you for your order!"
     COMPLETE_TEXT = (By.CSS_SELECTOR, ".complete-text")
     PONY_EXPRESS_IMAGE = (By.CSS_SELECTOR, ".pony_express")

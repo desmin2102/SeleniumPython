@@ -1,19 +1,20 @@
 """Test cases cho trang Cart (TC_CART_001 -> 007)."""
 
 import pytest
-from pages.login_page import LoginPage
-from pages.inventory_page import InventoryPage
+
 from pages.cart_page import CartPage
+from pages.inventory_page import InventoryPage
+from pages.login_page import LoginPage
 
 
 @pytest.fixture(autouse=True)
-def _login(driver):
-    LoginPage(driver).login("standard_user", "secret_sauce")
+def _login(driver, test_data):
+    creds = test_data["users"]["standard_user"]
+    LoginPage(driver).login(creds["username"], creds["password"])
 
 
 @pytest.mark.cart
 class TestCart:
-
     def test_TC_CART_001_navigate_to_cart(self, driver):
         # Click icon cart -> vào trang cart, title là 'Your Cart'
         InventoryPage(driver).go_to_cart()

@@ -1,18 +1,19 @@
 """Test cases cho trang Inventory - danh sách sản phẩm (TC_INV_001 -> 019)."""
 
 import pytest
-from pages.login_page import LoginPage
+
 from pages.inventory_page import InventoryPage
+from pages.login_page import LoginPage
 
 
 @pytest.fixture(autouse=True)
-def _login(driver):
-    LoginPage(driver).login("standard_user", "secret_sauce")
+def _login(driver, test_data):
+    creds = test_data["users"]["standard_user"]
+    LoginPage(driver).login(creds["username"], creds["password"])
 
 
 @pytest.mark.inventory
 class TestInventory:
-
     def test_TC_INV_001_six_products_displayed(self, driver):
         # Phải hiện đủ 6 sản phẩm
         assert InventoryPage(driver).get_product_count() == 6
@@ -133,6 +134,7 @@ class TestInventory:
 
         page.click_first_product_name()
         from pages.product_detail_page import ProductDetailPage
+
         ProductDetailPage(driver).click_back_to_products()
 
         names_after = page.get_product_names()

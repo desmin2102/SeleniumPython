@@ -2,6 +2,7 @@
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+
 from pages.base_page import BasePage
 
 
@@ -12,16 +13,16 @@ class InventoryPage(BasePage):
     """
 
     # Locator cho các element chính trên trang
-    TITLE = (By.CSS_SELECTOR, ".title")                          # Tiêu đề "Products"
-    INVENTORY_LIST = (By.CSS_SELECTOR, ".inventory_list")        # Container chứa tất cả sản phẩm
-    INVENTORY_ITEMS = (By.CSS_SELECTOR, ".inventory_item")       # Mỗi card sản phẩm
-    ITEM_NAMES = (By.CSS_SELECTOR, ".inventory_item_name")       # Tên sản phẩm (là link)
+    TITLE = (By.CSS_SELECTOR, ".title")  # Tiêu đề "Products"
+    INVENTORY_LIST = (By.CSS_SELECTOR, ".inventory_list")  # Container chứa tất cả sản phẩm
+    INVENTORY_ITEMS = (By.CSS_SELECTOR, ".inventory_item")  # Mỗi card sản phẩm
+    ITEM_NAMES = (By.CSS_SELECTOR, ".inventory_item_name")  # Tên sản phẩm (là link)
     ITEM_DESCRIPTIONS = (By.CSS_SELECTOR, ".inventory_item_desc")
     ITEM_PRICES = (By.CSS_SELECTOR, ".inventory_item_price")
     ITEM_IMAGES = (By.CSS_SELECTOR, ".inventory_item_img img")
-    SORT_DROPDOWN = (By.CSS_SELECTOR, ".product_sort_container") # Dropdown sort A-Z, giá
-    CART_BADGE = (By.CSS_SELECTOR, ".shopping_cart_badge")       # Số hiển thị trên icon cart
-    CART_LINK = (By.CSS_SELECTOR, ".shopping_cart_link")         # Icon cart ở góc phải
+    SORT_DROPDOWN = (By.CSS_SELECTOR, ".product_sort_container")  # Dropdown sort A-Z, giá
+    CART_BADGE = (By.CSS_SELECTOR, ".shopping_cart_badge")  # Số hiển thị trên icon cart
+    CART_LINK = (By.CSS_SELECTOR, ".shopping_cart_link")  # Icon cart ở góc phải
     # Dùng selector prefix "add-to-cart" và "remove" vì id dạng "add-to-cart-sauce-labs-backpack"
     ADD_TO_CART_BUTTONS = (By.CSS_SELECTOR, "button[id^='add-to-cart']")
     REMOVE_BUTTONS = (By.CSS_SELECTOR, "button[id^='remove']")

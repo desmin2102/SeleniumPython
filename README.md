@@ -6,46 +6,56 @@ Automation test suite cho trang [SauceDemo](https://www.saucedemo.com) với 87 
 - **Ngôn ngữ:** Python 3.10+
 - **Framework:** Pytest 8.x
 - **Automation:** Selenium WebDriver 4.x
-- **Driver:** webdriver-manager (tự download ChromeDriver)
-- **Report:** pytest-html (HTML report), Allure (tuỳ chọn)
+- **Browsers:** Chrome / Firefox / Edge (chuyển qua config hoặc CLI flag)
+- **Driver:** webdriver-manager (tự download driver tương ứng)
+- **Parallel:** pytest-xdist (`-n auto`)
+- **Retry flaky:** pytest-rerunfailures
+- **Report:** pytest-html
+- **Lint/format:** ruff + pre-commit
 - **Design pattern:** Page Object Model (POM)
 
 ## Cấu trúc project
 ```
 selenium-python-demo/
-├── config/config.ini              # URL, browser, headless setting
+├── config/config.ini              # Multi-env config (DEFAULT/dev/staging/prod)
 ├── pages/                         # Page Object (9 files)
-│   ├── base_page.py               # Class cha - wait, click, send_keys
-│   ├── login_page.py              # Trang login
-│   ├── inventory_page.py          # Danh sách sản phẩm
-│   ├── product_detail_page.py     # Chi tiết sản phẩm
-│   ├── cart_page.py               # Giỏ hàng
-│   ├── checkout_step1_page.py     # Nhập thông tin giao hàng
-│   ├── checkout_step2_page.py     # Overview đơn hàng
-│   ├── checkout_complete_page.py  # Xác nhận đặt hàng thành công
-│   ├── menu_page.py               # Menu hamburger
-│   └── footer_page.py             # Footer (social links)
+│   ├── base_page.py               # Class cha - wait, click, send_keys, log
+│   ├── login_page.py
+│   ├── inventory_page.py
+│   ├── product_detail_page.py
+│   ├── cart_page.py
+│   ├── checkout_step1_page.py
+│   ├── checkout_step2_page.py
+│   ├── checkout_complete_page.py
+│   ├── menu_page.py
+│   └── footer_page.py
 ├── tests/                         # Test cases (9 files, 87 tests)
-│   ├── conftest.py                # Fixtures + hooks (screenshot, HTML)
-│   ├── test_login.py              # 20 tests - Login
-│   ├── test_inventory.py          # 19 tests - Inventory
-│   ├── test_product_detail.py     # 4 tests - Product detail
-│   ├── test_cart.py               # 7 tests - Cart
-│   ├── test_checkout.py           # 23 tests - Checkout 3 steps
-│   ├── test_menu.py               # 5 tests - Menu
-│   ├── test_footer.py             # 4 tests - Footer
-│   ├── test_url_security.py       # 3 tests - URL security
-│   └── test_e2e.py                # 2 tests - End-to-End
+│   ├── conftest.py                # Fixtures (driver, config, test_data) + hooks
+│   ├── test_login.py              # 20 tests (đã parametrize)
+│   ├── test_inventory.py          # 19 tests
+│   ├── test_product_detail.py     # 4 tests
+│   ├── test_cart.py               # 7 tests
+│   ├── test_checkout.py           # 23 tests (3 step)
+│   ├── test_menu.py               # 5 tests
+│   ├── test_footer.py             # 4 tests
+│   ├── test_url_security.py       # 3 tests (đã parametrize, dùng config)
+│   └── test_e2e.py                # 2 tests
+├── utils/
+│   ├── helpers.py                 # Đọc config theo env, đọc test_data.json
+│   ├── logger.py                  # Logger ghi ra console + logs/test_*.log
+│   └── driver_factory.py          # Factory tạo WebDriver Chrome/Firefox/Edge
 ├── testcases/
-│   ├── generate_testcases.py      # Script sinh Excel test cases
-│   └── SauceDemo_TestCases.xlsx   # File Excel 87 test cases
-├── testdata/test_data.json        # Test data (credentials, checkout info)
-├── utils/helpers.py               # Đọc config.ini
-├── reports/                       # HTML report sau khi chạy
-├── screenshots/                   # Auto-capture sau mỗi test
-├── .github/workflows/tests.yml    # CI/CD GitHub Actions
-├── requirements.txt               # Python dependencies
-└── pytest.ini                     # Pytest config + markers
+│   ├── generate_testcases.py      # Sinh Excel test cases
+│   └── SauceDemo_TestCases.xlsx
+├── testdata/test_data.json        # Credentials 6 user types + checkout info
+├── reports/                       # HTML report
+├── screenshots/                   # PNG sau mỗi test
+├── logs/                          # File log mỗi test run
+├── .github/workflows/tests.yml    # CI/CD: lint + test parallel
+├── pyproject.toml                 # Cấu hình ruff
+├── .pre-commit-config.yaml        # Hook tự lint trước commit
+├── requirements.txt
+└── pytest.ini                     # Markers + log + reruns
 ```
 
 ## Setup
@@ -61,78 +71,89 @@ source venv/bin/activate        # Linux/Mac
 
 # Install dependencies
 pip install -r requirements.txt
+
+# (Optional) Cài pre-commit hook để tự lint trước commit
+pip install pre-commit && pre-commit install
 ```
 
 ## Chạy tests
 
+### Cú pháp cơ bản
 ```bash
-# Chạy toàn bộ 87 tests
+# Toàn bộ 87 tests (tuần tự)
 pytest
 
-# Chạy 1 module
+# Chạy parallel theo số CPU - nhanh hơn nhiều
+pytest -n auto
+
+# 1 module
 pytest tests/test_login.py
 
-# Chạy 1 test cụ thể
-pytest tests/test_login.py::TestLogin::test_TC_LOGIN_001_valid_standard_user
-
-# Chạy theo marker
+# Theo marker
 pytest -m login          # 20 login tests
 pytest -m e2e            # 2 E2E tests
 pytest -m security       # 3 URL security tests
-
-# Chạy với Allure report
-pytest --alluredir=allure-results
-allure serve allure-results
 ```
 
-## Chạy có giao diện (không headless)
+### Chuyển browser / môi trường
 
-Sửa `config/config.ini`:
-```ini
-headless = false
+| Cách | Ví dụ |
+|------|-------|
+| CLI flag | `pytest --browser firefox --env staging` |
+| Env var | `TEST_BROWSER=edge TEST_HEADLESS=false pytest` |
+| Sửa file | `config/config.ini` -> đổi section `[dev]` / `[staging]` / `[prod]` |
+
+Thứ tự ưu tiên: **CLI flag > env var > config.ini**.
+
+Env var override theo pattern `TEST_<KEY>`: `TEST_BROWSER`, `TEST_HEADLESS`, `TEST_BASE_URL`, `TEST_ENV`.
+
+### Chạy có giao diện (debug local)
+```bash
+TEST_HEADLESS=false pytest tests/test_login.py
+# hoặc sửa [dev] trong config.ini
 ```
-
-## Test cases theo module (87 tổng cộng)
-
-| Module            | Số test | Marker       | Bao gồm |
-|-------------------|---------|--------------|---------|
-| Login             | 20      | `login`      | 6 loại user, sai credential, empty field, case sensitive, whitespace, SQL injection, XSS, long input, special chars |
-| Inventory         | 19      | `inventory`  | 6 sản phẩm, sort 4 kiểu, add/remove cart, detail nav, max cart, sort reset bug |
-| Product Detail    | 4       | `product`    | Info display, add/remove, back button |
-| Cart              | 7       | `cart`       | Điều hướng, items, remove, checkout, price match |
-| Checkout Step 1   | 12      | `checkout`   | Validate 3 field, field robustness (long, special, Unicode emoji, whitespace) |
-| Checkout Step 2   | 7       | `checkout`   | Overview, payment/shipping info, tính subtotal + tax = total, finish/cancel |
-| Checkout Complete | 4       | `checkout`   | Success msg, Pony image, back home, cart empty |
-| Menu              | 5       | `menu`       | Open/close, all items, logout, reset app state |
-| Footer            | 4       | `footer`     | Twitter, Facebook, LinkedIn, copyright |
-| URL Security      | 3       | `security`   | Truy cập trực tiếp URL khi chưa login |
-| E2E               | 2       | `e2e`        | Full purchase 1 sản phẩm + multi-item (3 sản phẩm) |
 
 ## Output sau khi chạy
 
 | File/Folder | Nội dung |
 |-------------|----------|
-| `reports/report.html` | HTML report (pass/fail, thời gian, TC ID, screenshot embedded). Mỗi lần chạy sẽ ghi đè file này. |
-| `screenshots/` | Screenshot PNG, tên = `{TC_ID}_{PASS/FAIL}.png`. Xóa và tạo lại mỗi lần chạy full suite. |
-| `allure-results/` | Raw data cho Allure report (chỉ có nếu chạy với `--alluredir`) |
+| `reports/report.html` | HTML report (pass/fail, thời gian, TC ID, screenshot embedded) |
+| `screenshots/` | PNG mỗi test, tên = `{TC_ID}_{PASS/FAIL}[_{param}].png` |
+| `logs/test_<timestamp>.log` | Full log DEBUG (click, send_keys, navigation) - rất hữu ích khi CI fail |
 
-## Test case Excel
+## Lint / format
 
-Toàn bộ 87 test case được export ra file Excel ở [testcases/SauceDemo_TestCases.xlsx](testcases/SauceDemo_TestCases.xlsx):
-- **Sheet 1:** Chi tiết từng case (ID, Module, Priority, Type, Title, Precondition, Steps, Test Data, Expected Result, Automatable)
-- **Sheet 2:** Summary đếm số case theo module
-
-Nếu muốn sinh lại file Excel (sau khi thêm case mới):
 ```bash
-python testcases/generate_testcases.py
+ruff check .         # Check lỗi
+ruff check . --fix   # Auto fix
+ruff format .        # Format code
+pre-commit run --all-files   # Chạy mọi hook lên toàn project
 ```
+
+## Test cases theo module (87 tổng cộng)
+
+| Module            | Số test | Marker       |
+|-------------------|---------|--------------|
+| Login             | 20      | `login`      |
+| Inventory         | 19      | `inventory`  |
+| Product Detail    | 4       | `product`    |
+| Cart              | 7       | `cart`       |
+| Checkout (3 step) | 23      | `checkout`   |
+| Menu              | 5       | `menu`       |
+| Footer            | 4       | `footer`     |
+| URL Security      | 3       | `security`   |
+| E2E               | 2       | `e2e`        |
 
 ## Findings / Bugs phát hiện được
 
-1. **TC_CHK1_009 - Whitespace-only first name**: Site accept khoảng trắng làm first name (đáng lẽ phải reject vì tên không thể chỉ là space).
-2. **TC_INV_019 - Sort reset**: Khi vào product detail rồi back về inventory, sort bị reset về default thay vì persist.
-3. **Chrome password leak dialog**: Password `secret_sauce` nằm trong list breach của Chrome - modal dialog block automation. Đã fix bằng Chrome options trong conftest.py.
+1. **TC_CHK1_009 - Whitespace-only first name**: Site accept khoảng trắng làm first name (đáng lẽ phải reject).
+2. **TC_INV_019 - Sort reset**: Vào product detail rồi back về inventory thì sort bị reset.
+3. **Chrome password leak dialog**: Password `secret_sauce` nằm trong list breach của Chrome - đã fix bằng Chrome options trong [driver_factory.py](utils/driver_factory.py).
 
 ## CI/CD
 
-Mỗi lần push code lên nhánh main, GitHub Actions sẽ tự chạy toàn bộ test headless. File workflow: [.github/workflows/tests.yml](.github/workflows/tests.yml).
+[.github/workflows/tests.yml](.github/workflows/tests.yml) chạy:
+- **Lint job:** `ruff check` + `ruff format --check` (block test nếu fail).
+- **Test job:** install browser theo matrix, chạy `pytest -n auto`, retry 1 lần với flaky test.
+- Trigger: push/PR vào main, manual dispatch (chọn browser), cron 9h sáng VN.
+- Artifact: report + screenshots + logs (giữ 14 ngày).

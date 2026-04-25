@@ -1,19 +1,20 @@
 """Test cases cho trang chi tiết sản phẩm (TC_PROD_001 -> 004)."""
 
 import pytest
-from pages.login_page import LoginPage
+
 from pages.inventory_page import InventoryPage
+from pages.login_page import LoginPage
 from pages.product_detail_page import ProductDetailPage
 
 
 @pytest.fixture(autouse=True)
-def _setup(driver):
-    LoginPage(driver).login("standard_user", "secret_sauce")
+def _setup(driver, test_data):
+    creds = test_data["users"]["standard_user"]
+    LoginPage(driver).login(creds["username"], creds["password"])
 
 
 @pytest.mark.product
 class TestProductDetail:
-
     def test_TC_PROD_001_detail_page_shows_product_info(self, driver):
         # Info bên detail khớp với info bên inventory
         inv = InventoryPage(driver)

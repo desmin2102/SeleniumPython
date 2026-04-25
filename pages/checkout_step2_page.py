@@ -2,6 +2,7 @@
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+
 from pages.base_page import BasePage
 
 
@@ -12,7 +13,7 @@ class CheckoutStep2Page(BasePage):
     2 nút: Finish (xác nhận) và Cancel (hủy về inventory).
     """
 
-    TITLE = (By.CSS_SELECTOR, ".title")                       # "Checkout: Overview"
+    TITLE = (By.CSS_SELECTOR, ".title")  # "Checkout: Overview"
     CART_ITEMS = (By.CSS_SELECTOR, ".cart_item")
     ITEM_PRICES = (By.CSS_SELECTOR, ".inventory_item_price")
 
@@ -21,8 +22,8 @@ class CheckoutStep2Page(BasePage):
     SHIPPING_INFO_LABEL = (By.XPATH, "//*[contains(text(), 'Shipping Information')]")
 
     SUBTOTAL_LABEL = (By.CSS_SELECTOR, ".summary_subtotal_label")  # "Item total: $X.XX"
-    TAX_LABEL = (By.CSS_SELECTOR, ".summary_tax_label")            # "Tax: $X.XX"
-    TOTAL_LABEL = (By.CSS_SELECTOR, ".summary_total_label")        # "Total: $X.XX"
+    TAX_LABEL = (By.CSS_SELECTOR, ".summary_tax_label")  # "Tax: $X.XX"
+    TOTAL_LABEL = (By.CSS_SELECTOR, ".summary_total_label")  # "Total: $X.XX"
     FINISH_BUTTON = (By.ID, "finish")
     CANCEL_BUTTON = (By.ID, "cancel")
 
@@ -35,8 +36,7 @@ class CheckoutStep2Page(BasePage):
 
     def get_item_prices(self):
         """List giá từng item dạng float - dùng để kiểm tra phép tính subtotal."""
-        return [float(el.text.replace("$", ""))
-                for el in self.find_elements_safe(self.ITEM_PRICES)]
+        return [float(el.text.replace("$", "")) for el in self.find_elements_safe(self.ITEM_PRICES)]
 
     def is_payment_info_displayed(self):
         return self.is_displayed(self.PAYMENT_INFO_LABEL)

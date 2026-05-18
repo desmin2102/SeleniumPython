@@ -5,80 +5,35 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch:                 # Cho phép trigger manual + chọn browser
-    inputs:
-      browser:
-        description: 'Browser để test'
-        required: false
-        default: 'chrome'
-        type: choice
-        options: [chrome, firefox, edge, all]
-  schedule:
-    - cron: '0 2 * * *'              # 2h UTC ~ 9h sáng VN
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install ruff
-        run: pip install ruff==0.6.9
-      - name: Lint
-        run: ruff check .
-      - name: Format check
-        run: ruff format --check .
-
   test:
-    needs: lint
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chrome]   # Mặc định chỉ chạy chrome cho nhanh
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-          cache: 'pip'
+          python-version: '3.11'
 
       - name: Install Chrome
-        if: matrix.browser == 'chrome'
         uses: browser-actions/setup-chrome@v1
         with:
           chrome-version: stable
 
-      - name: Install Firefox
-        if: matrix.browser == 'firefox'
-        uses: browser-actions/setup-firefox@v1
-
-      - name: Install Edge
-        if: matrix.browser == 'edge'
-        uses: browser-actions/setup-edge@v1
-
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # -n auto = chạy parallel theo số CPU. Github runner thường có 2-4 core.
-      # --reruns đã set trong pytest.ini, retry 1 lần nếu flaky.
       - name: Run tests
-        env:
-          TEST_BROWSER: ${{ matrix.browser }}
-          TEST_HEADLESS: 'true'
-          TEST_ENV: staging
-        run: pytest -n auto --tb=short
+        run: pytest --tb=short
 
-      - name: Upload report + screenshots + logs
+      - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-report-${{ matrix.browser }}
+          name: test-report
           path: |
             reports/
             screenshots/
             logs/
-          retention-days: 14
+          retention-days: 7

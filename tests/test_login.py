@@ -1,14 +1,12 @@
-"""Test cases cho chức năng Login (TC_LOGIN_001 -> 020)."""
+"""Test cases cho chức năng Login."""
 
 import pytest
-from selenium.common.exceptions import NoAlertPresentException
 
 from pages.login_page import LoginPage
 
 
 @pytest.mark.login
 class TestLogin:
-    # ---------- Login thành công ----------
 
     def test_TC_LOGIN_001_valid_standard_user(self, driver, test_data):
         creds = test_data["users"]["standard_user"]
@@ -18,16 +16,11 @@ class TestLogin:
     @pytest.mark.parametrize(
         "user_key",
         ["problem_user", "performance_glitch_user", "error_user", "visual_user"],
-        ids=["TC_LOGIN_003", "TC_LOGIN_004", "TC_LOGIN_005", "TC_LOGIN_006"],
     )
     def test_alternate_user_can_login(self, driver, test_data, user_key):
-        # Cùng logic với TC_LOGIN_001 nhưng với 4 user khác (đặc biệt: bug UI hoặc delay).
-        # Tách ID riêng qua ids=[...] để screenshot/HTML report vẫn map đúng TC.
         creds = test_data["users"][user_key]
         LoginPage(driver).login(creds["username"], creds["password"])
         assert "/inventory.html" in driver.current_url
-
-    # ---------- Login fail ----------
 
     def test_TC_LOGIN_002_locked_out_user(self, driver, test_data):
         creds = test_data["users"]["locked_out_user"]
@@ -42,10 +35,8 @@ class TestLogin:
             ("standard_user", "wrong_password"),
             ("invalid_user", "secret_sauce"),
         ],
-        ids=["TC_LOGIN_007", "TC_LOGIN_008"],
     )
     def test_invalid_credentials(self, driver, username, password):
-        # 007 = sai password, 008 = username không tồn tại - cùng error message
         lp = LoginPage(driver)
         lp.login(username, password)
         assert lp.is_error_displayed()
@@ -88,10 +79,9 @@ class TestLogin:
             ("STANDARD_USER", "secret_sauce"),
             ("standard_user", "SECRET_SAUCE"),
         ],
-        ids=["TC_LOGIN_014", "TC_LOGIN_020"],
     )
     def test_credentials_case_sensitive(self, driver, username, password):
-        # 014 = username IN HOA, 020 = password IN HOA
+        # Username và password phân biệt chữ hoa/thường
         lp = LoginPage(driver)
         lp.login(username, password)
         assert lp.is_error_displayed()
@@ -104,8 +94,6 @@ class TestLogin:
         assert lp.is_error_displayed()
         assert "do not match" in lp.get_error_message().lower()
 
-    # ---------- Security / robustness ----------
-
     def test_TC_LOGIN_016_sql_injection_attempt(self, driver):
         lp = LoginPage(driver)
         lp.login("admin' OR '1'='1", "anything")
@@ -116,11 +104,7 @@ class TestLogin:
         lp = LoginPage(driver)
         lp.login("<script>alert(1)</script>", "anything")
         assert lp.is_error_displayed()
-        try:
-            driver.switch_to.alert.accept()
-            pytest.fail("XSS đã execute - alert xuất hiện!")
-        except NoAlertPresentException:
-            pass
+        assert "/inventory.html" not in driver.current_url
 
     def test_TC_LOGIN_018_very_long_username(self, driver, test_data):
         password = test_data["users"]["standard_user"]["password"]

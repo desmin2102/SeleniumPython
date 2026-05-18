@@ -1,7 +1,8 @@
-"""Test cases cho menu hamburger (TC_MENU_001 -> 005)."""
+"""Test cases cho menu hamburger."""
 
 import pytest
 
+from pages.cart_page import CartPage
 from pages.inventory_page import InventoryPage
 from pages.login_page import LoginPage
 from pages.menu_page import MenuPage
@@ -46,12 +47,10 @@ class TestMenu:
         menu.click_reset_app_state()
         menu.close()
         inv.go_to_cart()
-        from pages.cart_page import CartPage
-
         assert CartPage(driver).is_empty()
 
     def test_TC_MENU_005_menu_closes_via_x(self, driver):
-        # Click nút X -> menu đóng (close() đã chờ animation xong)
+        # Click nút X -> menu đóng lại
         menu = MenuPage(driver)
         menu.open()
         menu.close()

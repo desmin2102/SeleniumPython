@@ -1,4 +1,4 @@
-"""Test cases cho trang chi tiết sản phẩm (TC_PROD_001 -> 004)."""
+"""Test cases cho trang chi tiết sản phẩm."""
 
 import pytest
 

@@ -8,13 +8,13 @@
     "visual_user": {"username": "visual_user", "password": "secret_sauce"}
   },
   "checkout_info": {
-    "first_name": "John",
-    "last_name": "Doe",
+    "first_name": "Desmin",
+    "last_name": "Ha",
     "postal_code": "1234"
   },
   "checkout_info_alt": {
-    "first_name": "Alice",
-    "last_name": "Smith",
+    "first_name": "Ngoc",
+    "last_name": "Phung",
     "postal_code": "9999"
   }
 }

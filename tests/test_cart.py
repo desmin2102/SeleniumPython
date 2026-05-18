@@ -1,4 +1,4 @@
-"""Test cases cho trang Cart (TC_CART_001 -> 007)."""
+"""Test cases cho trang Cart."""
 
 import pytest
 

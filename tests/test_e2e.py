@@ -1,4 +1,4 @@
-"""End-to-End test cases - luồng mua hàng đầy đủ (TC_E2E_001, 002)."""
+"""Test cases end-to-end - mô phỏng luồng mua hàng đầy đủ."""
 
 import pytest
 
@@ -35,7 +35,7 @@ class TestEndToEnd:
         assert not inv.is_cart_badge_displayed()
 
     def test_TC_E2E_002_multi_item_purchase(self, driver, test_data):
-        # Luồng mua nhiều sản phẩm (3 items) - dùng checkout_info_alt để verify khác user
+        # Luồng mua 3 sản phẩm cùng lúc
         creds = test_data["users"]["standard_user"]
         info = test_data["checkout_info_alt"]
 

@@ -1,9 +1,10 @@
-"""Test cases cho trang Inventory - danh sách sản phẩm (TC_INV_001 -> 019)."""
+"""Test cases cho trang Inventory."""
 
 import pytest
 
 from pages.inventory_page import InventoryPage
 from pages.login_page import LoginPage
+from pages.product_detail_page import ProductDetailPage
 
 
 @pytest.fixture(autouse=True)
@@ -26,25 +27,29 @@ class TestInventory:
         # Mỗi sản phẩm phải có tên (không rỗng)
         names = InventoryPage(driver).get_product_names()
         assert len(names) == 6
-        assert all(n.strip() for n in names)
+        for name in names:
+            assert name.strip() != ""
 
     def test_TC_INV_004_all_products_have_prices(self, driver):
         # Mỗi sản phẩm phải có giá bắt đầu bằng '$'
         prices = InventoryPage(driver).get_product_prices_raw()
         assert len(prices) == 6
-        assert all(p.startswith("$") for p in prices)
+        for price in prices:
+            assert price.startswith("$")
 
     def test_TC_INV_005_all_products_have_descriptions(self, driver):
         # Mỗi sản phẩm phải có mô tả
         descs = InventoryPage(driver).get_product_descriptions()
         assert len(descs) == 6
-        assert all(d.strip() for d in descs)
+        for desc in descs:
+            assert desc.strip() != ""
 
     def test_TC_INV_006_all_products_have_images(self, driver):
         # Mỗi sản phẩm phải có ảnh (src khác rỗng)
         srcs = InventoryPage(driver).get_product_image_srcs()
         assert len(srcs) == 6
-        assert all(s for s in srcs)
+        for src in srcs:
+            assert src != ""
 
     def test_TC_INV_007_sort_name_a_to_z(self, driver):
         # Sort tên A-Z
@@ -126,15 +131,13 @@ class TestInventory:
         assert not page.is_cart_badge_displayed()
 
     def test_TC_INV_019_sort_resets_after_detail_navigation(self, driver):
-        # BUG: sort bị reset sau khi vào detail rồi back (site đáng lẽ phải persist)
+        # BUG: sort bị reset về mặc định sau khi vào trang chi tiết rồi back
         page = InventoryPage(driver)
         page.sort_products("za")
         names_before = page.get_product_names()
         assert names_before == sorted(names_before, reverse=True)
 
         page.click_first_product_name()
-        from pages.product_detail_page import ProductDetailPage
-
         ProductDetailPage(driver).click_back_to_products()
 
         names_after = page.get_product_names()

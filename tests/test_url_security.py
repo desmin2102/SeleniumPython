@@ -1,4 +1,4 @@
-"""Test cases cho URL Security - truy cập trực tiếp URL khi chưa login (TC_URL_001 -> 003)."""
+"""Test cases kiểm tra bảo vệ URL khi chưa đăng nhập."""
 
 import pytest
 
@@ -10,11 +10,9 @@ class TestUrlSecurity:
     @pytest.mark.parametrize(
         "path",
         ["inventory.html", "cart.html", "checkout-complete.html"],
-        ids=["TC_URL_001", "TC_URL_002", "TC_URL_003"],
     )
     def test_protected_url_requires_login(self, driver, config, path):
-        # Truy cập trực tiếp URL bảo vệ khi chưa login -> bị block + báo lỗi
-        # Lấy base_url từ config để dễ chuyển env (dev/staging/prod)
+        # Truy cập URL khi chưa login -> bị block và hiện thông báo lỗi
         driver.get(f"{config['base_url']}/{path}")
         lp = LoginPage(driver)
         assert lp.is_error_displayed()

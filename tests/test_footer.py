@@ -1,4 +1,4 @@
-"""Test cases cho footer (TC_FOOTER_001 -> 004)."""
+"""Test cases cho footer."""
 
 import pytest
 

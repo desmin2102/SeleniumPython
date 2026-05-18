@@ -1,4 +1,4 @@
-"""Page object cho trang chi tiết sản phẩm (URL: /inventory-item.html?id=X)."""
+"""Page object cho trang chi tiết sản phẩm (URL: /inventory-item.html)."""
 
 from selenium.webdriver.common.by import By
 
@@ -6,10 +6,6 @@ from pages.base_page import BasePage
 
 
 class ProductDetailPage(BasePage):
-    """
-    Trang chi tiết sản phẩm, vào được bằng cách click vào tên hoặc ảnh sản phẩm ở inventory.
-    Có các info: tên, mô tả, giá, ảnh, nút Add to cart / Remove, nút Back to products.
-    """
 
     PRODUCT_NAME = (By.CSS_SELECTOR, ".inventory_details_name")
     PRODUCT_DESC = (By.CSS_SELECTOR, ".inventory_details_desc")
@@ -34,23 +30,23 @@ class ProductDetailPage(BasePage):
         return self.get_attribute(self.PRODUCT_IMAGE, "src")
 
     def click_add_to_cart(self):
-        """Add sản phẩm này vào cart - button sẽ đổi thành 'Remove' sau khi click."""
+        """Thêm sản phẩm vào giỏ hàng."""
         self.click(self.ADD_TO_CART_BUTTON)
 
     def click_remove(self):
-        """Remove sản phẩm khỏi cart."""
+        """Xóa sản phẩm khỏi giỏ hàng."""
         self.click(self.REMOVE_BUTTON)
 
     def is_remove_visible(self):
-        """Nút Remove có hiện không (chỉ hiện khi sản phẩm đã ở trong cart)."""
+        """Nút Remove có hiện không."""
         return self.is_present(self.REMOVE_BUTTON)
 
     def is_add_to_cart_visible(self):
-        """Nút Add to cart có hiện không (chỉ hiện khi sản phẩm CHƯA ở trong cart)."""
+        """Nút Add to cart có hiện không."""
         return self.is_present(self.ADD_TO_CART_BUTTON)
 
     def click_back_to_products(self):
-        """Click nút 'Back to products' để quay về trang Inventory."""
+        """Quay về trang danh sách sản phẩm."""
         self.click(self.BACK_TO_PRODUCTS)
 
     def get_cart_badge_count(self):
